@@ -1,4 +1,5 @@
 *.ipynb
-./.ipynb_checkpoints
-./media
-./cache
+.ipynb_checkpoints/
+media/
+cache/
+ffmpeg-master-latest-win64-gpl/
