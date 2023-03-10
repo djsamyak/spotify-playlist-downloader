@@ -1,4 +1,4 @@
-*.ipnyb
+*.ipynb
 ./.ipynb_checkpoints
 ./media
 ./cache
