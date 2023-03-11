@@ -2,5 +2,5 @@
 .ipynb_checkpoints/
 media/
 cache/
-ffmpeg-master-latest-win64-gpl/
+./ffmpeg-master-latest-win64-gpl/
 .cache
