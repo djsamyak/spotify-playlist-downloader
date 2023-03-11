@@ -30,42 +30,45 @@ def get_all_tracks(playlist_uri,offset=0):
     playlist_length = playlist_details['total'] - offset
     return playlist_length,playlist_details
 
-playlist_length,playlist_details = get_all_tracks(playlist_uri)
 
-REQUIRED_INCREMENTS = playlist_length // 100
+def fetch_playlist_details(playlist_uri,offset_counter):
+    playlist_length,playlist_details = get_all_tracks(playlist_uri)
+    REQUIRED_INCREMENTS = playlist_length // 100
 
-if playlist_length > 100:
-    if offset_counter == 0:
-        load_playlist_data(100,playlist_details)
-        offset_counter += 100 
-        
-    if offset_counter <= REQUIRED_INCREMENTS * 100:
-        playlist_length,playlist_details = get_all_tracks(playlist_uri,offset_counter)
+    if playlist_length > 100:
+        if offset_counter == 0:
+            load_playlist_data(100,playlist_details)
+            offset_counter += 100 
+            
+        if offset_counter <= REQUIRED_INCREMENTS * 100:
+            playlist_length,playlist_details = get_all_tracks(playlist_uri,offset_counter)
+            load_playlist_data(playlist_length,playlist_details)
+            offset_counter += 100 
+    else:
         load_playlist_data(playlist_length,playlist_details)
-        offset_counter += 100 
-else:
-    load_playlist_data(playlist_length,playlist_details)
 
 # print("\nCurrently Downloading: ",playlist_details['name'],end="\n\n")
 
-for track_name,artist_name in tqdm(playlist_tracks):
-    try:
-        search_query1 = "+".join(str(track_name).split())
-        search_query2 = "+".join(str(artist_name).split())
+def download():
+    for track_name,artist_name in playlist_tracks:
+        try:
+            search_query1 = "+".join(str(track_name).split())
+            search_query2 = "+".join(str(artist_name).split())
 
-        html = urllib.request.urlopen(f"https://www.youtube.com/results?search_query={search_query1}+{search_query2}+lyrics")
-        video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-        youtube_video_URL = "https://www.youtube.com/watch?v=" + video_ids[0]
+            html = urllib.request.urlopen(f"https://www.youtube.com/results?search_query={search_query1}+{search_query2}+lyrics")
+            video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+            youtube_video_URL = "https://www.youtube.com/watch?v=" + video_ids[0]
 
-        # print(track_name)
-        # print(youtube_video_URL)
+            # print(track_name)
+            print(youtube_video_URL)
 
-        AUDIO_SAVE_PATH = SAVE_PATH + f"\{track_name} - {artist_name}.%(ext)s"
+            AUDIO_SAVE_PATH = SAVE_PATH + f"\{track_name} - {artist_name}.%(ext)s"
 
-        subprocess.run(['yt-dlp','-f','bestaudio', '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0','--quiet', '--ffmpeg-location', FFMPEG_PATH, '-o', AUDIO_SAVE_PATH, youtube_video_URL])
-    
-    except Exception as e:
-        print("\n-----------------------------")
-        print(search_query1)
-        print(search_query2)
-        print("-----------------------------\n")
+            subprocess.run(['yt-dlp','-f','bestaudio', '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0','--quiet', '--ffmpeg-location', FFMPEG_PATH, '-o', AUDIO_SAVE_PATH, youtube_video_URL])
+        
+        except Exception as e:
+            print(e)
+            print("\n-----------------------------")
+            print(search_query1)
+            print(search_query2)
+            print("-----------------------------\n")

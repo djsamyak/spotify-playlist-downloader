@@ -3,3 +3,4 @@
 media/
 cache/
 ffmpeg-master-latest-win64-gpl/
+.cache
