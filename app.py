@@ -1,22 +1,20 @@
 import re
-import os
 import spotipy
 import subprocess
-from tqdm import tqdm
 import urllib.request
 from spotipy.oauth2 import SpotifyClientCredentials
-
-SPOTIPY_CLIENT_ID = os.environ.get('SPOTIPY_CLIENT_ID')
-SPOTIPY_CLIENT_SECRET = os.environ.get('SPOTIPY_CLIENT_SECRET')
-
-SAVE_PATH = r"D:\Work\Programming\spotify-downloader\media"
-FFMPEG_PATH = r"D:\Work\Programming\spotify-downloader\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe"
 
 offset_counter = 0
 playlist_tracks = []
 increment_counter = 0
 
-playlist_uri = "spotify:playlist:74fyd8F4UMEzIXF5dlrWbV"
+args = {}
+
+def importer(arg_list):
+    args['SPOTIPY_CLIENT_ID'] = arg_list[0]
+    args['SPOTIPY_CLIENT_SECRET'] = arg_list[1]
+    args['SAVE_PATH'] = arg_list[2]
+    args['FFMPEG_PATH'] = arg_list[3]
 
 def load_playlist_data(playlist_subsection_length,playlist_details):
     for _ in range(playlist_subsection_length):
@@ -25,7 +23,7 @@ def load_playlist_data(playlist_subsection_length,playlist_details):
         playlist_tracks.append([track_name,track_artist])
 
 def get_all_tracks(playlist_uri,offset=0):
-    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(SPOTIPY_CLIENT_ID,SPOTIPY_CLIENT_SECRET))
+    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(args['SPOTIPY_CLIENT_ID'],args['SPOTIPY_CLIENT_SECRET']))
     playlist_details = spotify.playlist_items(playlist_uri,offset=offset)
     playlist_length = playlist_details['total'] - offset
     return playlist_length,playlist_details
@@ -62,9 +60,9 @@ def download():
             # print(track_name)
             print(youtube_video_URL)
 
-            AUDIO_SAVE_PATH = SAVE_PATH + f"\{track_name} - {artist_name}.%(ext)s"
+            AUDIO_SAVE_PATH = args['SAVE_PATH'] + f"\{track_name} - {artist_name}.%(ext)s"
 
-            subprocess.run(['yt-dlp','-f','bestaudio', '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0','--quiet', '--ffmpeg-location', FFMPEG_PATH, '-o', AUDIO_SAVE_PATH, youtube_video_URL])
+            subprocess.run(['yt-dlp','-f','bestaudio', '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0','--quiet', '--ffmpeg-location', args['FFMPEG_PATH'], '-o', AUDIO_SAVE_PATH, youtube_video_URL])
         
         except Exception as e:
             print(e)
