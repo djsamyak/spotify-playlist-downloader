@@ -1,15 +1,26 @@
 import os
 import app as backend
 
-offset_counter = 0
-playlist_uri = "spotify:playlist:74fyd8F4UMEzIXF5dlrWbV"
-
 SPOTIPY_CLIENT_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 SPOTIPY_CLIENT_SECRET = os.environ.get('SPOTIPY_CLIENT_SECRET')
 
-SAVE_PATH = r"D:\Work\Programming\spotify-downloader\media"
-FFMPEG_PATH = r"D:\Work\Programming\spotify-downloader\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe"
+playlist_uri = input("Playlist URI\n")
+print()
+SAVE_PATH = input("Download Directory\n")
+print()
+FFMPEG_PATH = input("FFMPEG Executable\n")
+print() 
+
+
+if SPOTIPY_CLIENT_ID == None:
+    SPOTIPY_CLIENT_ID = input("Enter Spotify Developer Client ID\n")
+    print()
+
+if SPOTIPY_CLIENT_SECRET == None:
+    SPOTIPY_CLIENT_SECRET = input("Enter Spotify Developer Client Secret\n")
+    print()
+
 
 backend.importer([SPOTIPY_CLIENT_ID,SPOTIPY_CLIENT_SECRET,SAVE_PATH,FFMPEG_PATH])
-backend.fetch_playlist_details(playlist_uri,offset_counter)
+backend.fetch_playlist_details(playlist_uri)
 backend.download()

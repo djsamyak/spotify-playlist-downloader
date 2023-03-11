@@ -29,7 +29,7 @@ def get_all_tracks(playlist_uri,offset=0):
     return playlist_length,playlist_details
 
 
-def fetch_playlist_details(playlist_uri,offset_counter):
+def fetch_playlist_details(playlist_uri,offset_counter = 0):
     playlist_length,playlist_details = get_all_tracks(playlist_uri)
     REQUIRED_INCREMENTS = playlist_length // 100
 
@@ -48,7 +48,7 @@ def fetch_playlist_details(playlist_uri,offset_counter):
 # print("\nCurrently Downloading: ",playlist_details['name'],end="\n\n")
 
 def download():
-    for track_name,artist_name in playlist_tracks:
+    for count,(track_name,artist_name) in enumerate(playlist_tracks):
         try:
             search_query1 = "+".join(str(track_name).split())
             search_query2 = "+".join(str(artist_name).split())
@@ -57,13 +57,13 @@ def download():
             video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
             youtube_video_URL = "https://www.youtube.com/watch?v=" + video_ids[0]
 
-            # print(track_name)
-            print(youtube_video_URL)
-
             AUDIO_SAVE_PATH = args['SAVE_PATH'] + f"\{track_name} - {artist_name}.%(ext)s"
 
             subprocess.run(['yt-dlp','-f','bestaudio', '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0','--quiet', '--ffmpeg-location', args['FFMPEG_PATH'], '-o', AUDIO_SAVE_PATH, youtube_video_URL])
-        
+
+            print(f"{youtube_video_URL}\t\t{count+1}/{len(playlist_tracks)}")
+            print(track_name,end="\n\n")
+
         except Exception as e:
             print(e)
             print("\n-----------------------------")
